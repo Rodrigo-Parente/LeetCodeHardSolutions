@@ -1,0 +1,70 @@
+public class Solution 
+{
+    public string MinWindow(string s, string t) 
+    {
+        // Stores lower and uppercase letters + 6 random symbols inbetween
+        int[] seen1 = new int[58];
+        int[] seen2 = new int[58];
+
+        // Update the letters apperance in string t
+        for(int i=0; i < t.Length; i++)
+        {
+            seen2[t[i] - 'A']++;
+        }
+
+        // Stores the result
+        string result = "";
+
+        // Left Pointer in the sliding window
+        int left = 0;
+        // Keeps track of the number of letters that are the same
+        int same = 0;
+
+        // Updates same variable with no window
+        for(int i = 0; i < 58; i++)
+        {
+            if (seen2[i] == 0) {same++;}
+        }
+
+        // Iterates expanding window to right
+        for(int right = 0; right < s.Length; right++)
+        {
+            // Add new letter to seen1 array
+            seen1[s[right] - 'A']++;
+            // Check if the new letter caused the value to equal the value in seen2
+            if(seen1[s[right] - 'A'] == seen2[s[right] - 'A']) {same++;}
+            // If the arrays are not the same, increase the right side
+            if(same < 58)
+            {
+                continue;
+            }
+
+            bool entered = false;
+            // while the arrays are the same, we can reduce the window on its left side 
+            while(same == 58)
+            {
+                seen1[s[left] - 'A']--;
+                // Check if losing the letter cause the value to become unequal
+                if(seen1[s[left] - 'A'] < seen2[s[left] - 'A']) {same--;}
+                left++;
+                entered = true;
+            }
+            // If it entered, the while loop, we need to go back a space because it means the
+            // last iteration was not possible. 
+            if(entered)
+            {
+                left--;
+                seen1[s[left] - 'A']++;
+                same = 58;
+            }
+            // If this window is smaller than our current result or result is empty, we can
+            // assign result to our current window
+            if(right - left < result.Length || result == "")
+            {
+                result = s.Substring(left, right - left + 1);
+            }
+        }
+
+        return result;
+    }
+}
